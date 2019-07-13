@@ -42,6 +42,9 @@ parser.add_argument('--keep_video',
                     
 args = parser.parse_args()
 
+print('data_dir: {}'.format(args.data_dir))
+print('video_timestamp: {}'.format(args.video_timestamp))
+
 video_file_path = '{}/{}/{}.h264'.format(args.data_dir, args.video_timestamp, args.video_timestamp)
 vs = cv2.VideoCapture(video_file_path)
 original_frame_width = vs.get(3)
