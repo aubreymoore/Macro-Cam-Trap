@@ -42,9 +42,6 @@ parser.add_argument('--keep_video',
                     
 args = parser.parse_args()
 
-print('data_dir: {}'.format(args.data_dir))
-print('video_timestamp: {}'.format(args.video_timestamp))
-
 video_file_path = '{}/{}/{}.h264'.format(args.data_dir, args.video_timestamp, args.video_timestamp)
 vs = cv2.VideoCapture(video_file_path)
 original_frame_width = vs.get(3)
@@ -86,7 +83,7 @@ while True:
     
     # if the average frame is None, initialize
     if avg is None:
-        print("[INFO] starting background model...")
+        # print("[INFO] starting background model...")
         avg = gray.copy().astype("float")
         #rawCapture.truncate(0)
         continue    
@@ -119,7 +116,7 @@ while True:
             xbr = (x+w) / detection_frame_width
             ybr = (y+h) / detection_frame_height
             filename = '{}/{}/{}f{:0>6}.jpg'.format(args.data_dir, args.video_timestamp, args.video_timestamp, framenum)
-            print('{} {} {} {} {}'.format(filename, xtl, ytl, xbr, ybr))
+            print('mob {} {:f} {:f} {:f} {:f}'.format(filename, xtl, ytl, xbr, ybr))
             df = df.append({'filename': filename,
                             'xtl': xtl,
                             'ytl': ytl,

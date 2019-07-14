@@ -2,27 +2,54 @@
 #
 # trapcam.sh
 #
-# Aubrey Moore 2019-07-13
+# Aubrey Moore 2019-07-14a
 #
+
+#######################
 
 # Check for  USB storage device; exit if not found
 
 if [ -z "$(ls -A /media/pi)" ]
 then
-   echo "ERROR: Cannot find USB memory for data storage."
-   exit
+    echo "ERROR: Cannot find USB memory for data storage."
+    echo "Abnormal termination"
+    exit
 else
-   data_dir="/media/pi/$(ls /media/pi)" 
-   echo "Data will be stored on $data_dir"
-   df -h $data_dir
+    datadir="/media/pi/$(ls /media/pi)" 
+    echo "Data will be stored on $datadir"
+    df -h $datadir
+    echo
 fi
+
+# Make a "videos" directory on the storage device if it does not already exist
+videodir=${datadir}/videos
+mkdir -p $videodir
+
+# Check for configuration file in top level directory of USB storage device.
+
+file="${datadir}/macrocamtrap.config"
+if [ -f "$file" ]
+then
+    echo "$file found"
+    # Copy macrocamtrap.config from USB storage device to the same directory
+    # as this script
+    echo "Copying macrocamtrap.config from USB memory device to RPi"
+    cp $file macrocamtrap.config 
+else
+    echo "$file not found"
+    # Copy macrocamtrap.config from same directory as this script to top level
+    # directory of the USB storage device
+    echo "Copying from RPi to USB memory device"
+    echo cp macrocamtrap.config $file
+    cp macrocamtrap.config $file
+fi
+
+
+######################
 
 # Read parameters from conf file
 
 source macrocamtrap.config
-
-# Make a directory for videos if it does not already exist
-mkdir -p $VIDEO_DIR
 
 for ((i = 1 ; i<= $MAX_VIDEOS ; i++))
 do
@@ -33,17 +60,20 @@ do
 
    timestamp=$(date +%s%3N)
 
-   mkdir -p ${VIDEO_DIR}/$timestamp
-   video_file_name=${VIDEO_DIR}/${timestamp}/${timestamp}.h264
-   echo "recording $video_file_name [ CTRL+C to stop ]"
+   mkdir -p ${videodir}/$timestamp
+   video_file_name=${videodir}/${timestamp}/${timestamp}.h264
+   echo
    echo raspivid -o $video_file_name -t $VIDEO_LENGTH_MS -p $PREVIEW_WINDOW
    raspivid -o $video_file_name -t $VIDEO_LENGTH_MS -p $PREVIEW_WINDOW
+
+   # Store a copy of macrocamtrap.config in same directory as video and frames
+   cp macrocamtrap.config ${videodir}/${timestamp}/macrocamtrap.config
 
    # Process video
 
    if [ "$PROCESS_VIDEO" = true ] ; then
-      echo python3 motion_detector.py $VIDEO_DIR $timestamp  
-      python3 motion_detector.py $VIDEO_DIR $timestamp  
+      echo python3 motion_detector.py $videodir $timestamp  
+      python3 motion_detector.py $videodir $timestamp  
       if [ "$DELETE_VIDEO_AFTER_PROCESSING" = true ] ; then
          echo "   Deleting video."
          rm $video_file_name
@@ -52,7 +82,9 @@ do
 
    # Display remaining memory for output data
 
-   df $VIDEO_DIR -h
+   df $datadir -h
    echo
 done
 
+echo
+echo "Normal termination"
