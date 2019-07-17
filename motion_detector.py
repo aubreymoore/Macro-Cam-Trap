@@ -25,7 +25,7 @@ start = time.time()
 
 # The following line allows testing argparse within a Jupyter notebook
 # Comment it out when using code in a script
-sys.argv = ['motion_detector.py', '/media/aubrey/70D7-5135/videos', '1563341307489']
+#sys.argv = ['motion_detector.py', '/media/aubrey/70D7-5135/videos', '1563341307489']
 
 parser = argparse.ArgumentParser(description='Motion detector.    When one or more objects in motion are detected in a video frame,    the frame is saved and bounding box coordinates are added to a dataframe.    When the video has been processed, the dataframe is saved as a CSV file    and the original video is optionally deleted to save storage space.    This script should be run in the same directory as the video file.')
 
@@ -160,5 +160,5 @@ print('Processing time: {} seconds'.format(int(time.time()-start)))
 # In[ ]:
 
 
-get_ipython().system("jupyter nbconvert --to=script 'motion_detector'")
+#get_ipython().system("jupyter nbconvert --to=script 'motion_detector'")
 

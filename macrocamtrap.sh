@@ -2,16 +2,17 @@
 #
 # trapcam.sh
 #
-# Aubrey Moore 2019-07-14a
+# Aubrey Moore (aubreymoore@guam.net) 2019-07-17
 #
-
-#######################
+# This bash script is intended for runnung only on a Raspberry Pi 
+# equiped with a camera.
+#################################################################
 
 # Check for  USB storage device; exit if not found
-
+##################################################
 if [ -z "$(ls -A /media/pi)" ]
 then
-    echo "ERROR: Cannot find USB memory for data storage."
+    echo "ERROR: Cannot find USB memory for data storage at /media/pi."
     echo "Abnormal termination"
     exit
 else
@@ -22,10 +23,13 @@ else
 fi
 
 # Make a "videos" directory on the storage device if it does not already exist
+##############################################################################
+
 videodir=${datadir}/videos
 mkdir -p $videodir
 
 # Check for configuration file in top level directory of USB storage device.
+############################################################################
 
 file="${datadir}/macrocamtrap.config"
 if [ -f "$file" ]
@@ -44,18 +48,22 @@ else
     cp macrocamtrap.config $file
 fi
 
-
-######################
-
 # Read parameters from conf file
+################################
 
 source macrocamtrap.config
+
+
+########################################
+# RECORD AND (OPTIONALLY) PROCESS VIDEOS
+########################################
 
 for ((i = 1 ; i<= $MAX_VIDEOS ; i++))
 do
 
-   # Record video
-
+   # Record video using raspivid
+   #############################
+   
    # Get timestamp for start of video in ms since epoch
 
    timestamp=$(date +%s%3N)
@@ -70,6 +78,7 @@ do
    cp macrocamtrap.config ${videodir}/${timestamp}/macrocamtrap.config
 
    # Process video
+   ###############
 
    if [ "$PROCESS_VIDEO" = true ] ; then
       echo python3 motion_detector.py $videodir $timestamp  

@@ -15,7 +15,7 @@ import sys
 
 # The following line allows testing argparse within a Jupyter notebook
 # Comment it out when using code in a script
-sys.argv = ['draw_bounding_boxes', '/media/aubrey/70D7-5135/videos', '1563341307489']
+#sys.argv = ['draw_bounding_boxes', '/media/aubrey/70D7-5135/videos', '1563341307489']
 
 parser = argparse.ArgumentParser(description='Description goes here.')
 
@@ -95,7 +95,7 @@ cv2.destroyAllWindows()
 # In[52]:
 
 
-get_ipython().system("jupyter nbconvert --to=script 'draw_bounding_boxes.ipynb'")
+#get_ipython().system("jupyter nbconvert --to=script 'draw_bounding_boxes.ipynb'")
 
 
 # In[ ]:
