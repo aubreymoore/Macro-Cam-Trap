@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[10]:
+
+
 import imutils
 import time
 import cv2
@@ -5,21 +11,29 @@ import argparse
 import os
 import shutil
 import pandas as pd
+import sys
+
+
+# In[11]:
+
 
 start = time.time()
 
-parser = argparse.ArgumentParser(description='Motion detector.\
-    When one or more objects in motion are detected in a video frame,\
-    the frame is saved and bounding box coordinates are added to a dataframe.\
-    When the video has been processed, the dataframe is saved as a CSV file\
-    and the original video is optionally deleted to save storage space.\
-    This script should be run in the same directory as the video file.')
+
+# In[12]:
+
+
+# The following line allows testing argparse within a Jupyter notebook
+# Comment it out when using code in a script
+sys.argv = ['motion_detector.py', '/media/aubrey/70D7-5135/videos', '1563341307489']
+
+parser = argparse.ArgumentParser(description='Motion detector.    When one or more objects in motion are detected in a video frame,    the frame is saved and bounding box coordinates are added to a dataframe.    When the video has been processed, the dataframe is saved as a CSV file    and the original video is optionally deleted to save storage space.    This script should be run in the same directory as the video file.')
 
 parser.add_argument('data_dir',
                     type=str,
                     help='data directory (without trailing /) \
-		    Example: /media/pi/9016-4EF8/videos')
-
+                    Example: /media/pi/9016-4EF8/videos')
+  
 parser.add_argument('video_timestamp',
                     type=str,
                     help='video timestamp \
@@ -41,6 +55,10 @@ parser.add_argument('--keep_video',
                     help='keep the original video after processing?')
                     
 args = parser.parse_args()
+
+
+# In[14]:
+
 
 video_file_path = '{}/{}/{}.h264'.format(args.data_dir, args.video_timestamp, args.video_timestamp)
 vs = cv2.VideoCapture(video_file_path)
@@ -64,8 +82,7 @@ while True:
     frame = vs.read()
     frame = frame[1]
     
-    # If we are at the end of the file, the frame will be empty
-    # So break out of the loop.
+    # If we are at the end of the file, the frame will be empty, so break out of the loop.
     if frame is None:
         break
     
@@ -88,15 +105,13 @@ while True:
         #rawCapture.truncate(0)
         continue    
     
-    # accumulate the weighted average between the current frame and
-    # previous frames, then compute the difference between the current
-    # frame and running average
+    # accumulate the weighted average between the current frame and previous frames, 
+    # then compute the difference between the current frame and running average
     cv2.accumulateWeighted(gray, avg, 0.5)
     frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))    
     thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
 
-    # dilate the thresholded image to fill in holes, then find contours
-    # on thresholded image
+    # dilate the thresholded image to fill in holes, then find contours on thresholded image
     thresh = cv2.dilate(thresh, None, iterations=2)
     cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = imutils.grab_contours(cnts)
@@ -115,7 +130,7 @@ while True:
             ytl = y / detection_frame_height
             xbr = (x+w) / detection_frame_width
             ybr = (y+h) / detection_frame_height
-            filename = '{}/{}/{}f{:0>6}.jpg'.format(args.data_dir, args.video_timestamp, args.video_timestamp, framenum)
+            filename = '{}f{:0>6}.jpg'.format(args.video_timestamp, framenum)
             print('mob {} {:f} {:f} {:f} {:f}'.format(filename, xtl, ytl, xbr, ybr))
             df = df.append({'filename': filename,
                             'xtl': xtl,
@@ -140,3 +155,10 @@ if args.keep_video=='false':
 
 # Display run time
 print('Processing time: {} seconds'.format(int(time.time()-start)))
+
+
+# In[ ]:
+
+
+get_ipython().system("jupyter nbconvert --to=script 'motion_detector'")
+
