@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[10]:
+# In[6]:
 
 
 import imutils
@@ -14,18 +14,18 @@ import pandas as pd
 import sys
 
 
-# In[11]:
+# In[7]:
 
 
 start = time.time()
 
 
-# In[12]:
+# In[8]:
 
 
 # The following line allows testing argparse within a Jupyter notebook
 # Comment it out when using code in a script
-#sys.argv = ['motion_detector.py', '/media/aubrey/70D7-5135/videos', '1563341307489']
+#sys.argv = ['motion_detector.py', '/media/pi/70D7-5135/videos', '1563353971438']
 
 parser = argparse.ArgumentParser(description='Motion detector.    When one or more objects in motion are detected in a video frame,    the frame is saved and bounding box coordinates are added to a dataframe.    When the video has been processed, the dataframe is saved as a CSV file    and the original video is optionally deleted to save storage space.    This script should be run in the same directory as the video file.')
 
@@ -57,7 +57,7 @@ parser.add_argument('--keep_video',
 args = parser.parse_args()
 
 
-# In[14]:
+# In[ ]:
 
 
 video_file_path = '{}/{}/{}.h264'.format(args.data_dir, args.video_timestamp, args.video_timestamp)
@@ -130,7 +130,7 @@ while True:
             ytl = y / detection_frame_height
             xbr = (x+w) / detection_frame_width
             ybr = (y+h) / detection_frame_height
-            filename = '{}f{:0>6}.jpg'.format(args.video_timestamp, framenum)
+            filename = '{}/{}/{}f{:0>6}.jpg'.format(args.data_dir, args.video_timestamp, args.video_timestamp, framenum)
             print('mob {} {:f} {:f} {:f} {:f}'.format(filename, xtl, ytl, xbr, ybr))
             df = df.append({'filename': filename,
                             'xtl': xtl,
